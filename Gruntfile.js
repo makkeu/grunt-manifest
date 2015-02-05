@@ -72,7 +72,26 @@ module.exports = function (grunt) {
           'folder_two/*.css'
         ],
         dest: 'tmp/manifest2.appcache'
+      },
+      master3: {
+          options: {
+              basePath: 'test/fixtures',
+              verbose: false,
+              timestamp: false,
+              absolutePaths: true,
+              master: 'master1.html',
+              fallback: {'/': '/'}
+          },
+          src: [
+              '*.js',
+              '*.css',
+              'folder_one/*',
+              'folder_two/*.js',
+              'folder_two/*.css'
+          ],
+          dest: 'tmp/manifest3.appcache'
       }
+
     },
 
     // Unit tests.
