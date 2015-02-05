@@ -19,12 +19,20 @@ module.exports = function (grunt) {
 
     var path = require('path');
 
-    function encodePath(path) {
-        if (options.absolutePaths) {
+    function encodePath(path, noAbsolute) {
+        if (noAbsolute !== true && options.absolutePaths) {
             return encodeURI(path.charAt(0) === '/' ? path : '/' + path);
         } else {
             return encodeURI(path);
         }
+    }
+
+    function onlyUnique(value, index, self) {
+      return self.indexOf(value) === index;
+    }
+
+    function uniqueArray(arr) {
+      return arr.filter(onlyUnique);
     }
 
     this.files.forEach(function (file) {
@@ -80,10 +88,11 @@ module.exports = function (grunt) {
       // Cache section
       contents += '\nCACHE:\n';
 
+      var explicitCache = [];
       // add files to explicit cache manually
       if (cacheFiles) {
         cacheFiles.forEach(function (item) {
-          contents += encodePath(item) + '\n';
+          explicitCache.push(encodePath(item));
         });
       }
 
@@ -91,9 +100,9 @@ module.exports = function (grunt) {
       if (files) {
         files.forEach(function (item) {
           if (options.process) {
-            contents += encodePath(options.process(item)) + '\n';
+            explicitCache.push(encodePath(options.process(item)));
           } else {
-            contents += encodePath(item) + '\n';
+            explicitCache.push(encodePath(item));
           }
 
           // hash file contents
@@ -104,11 +113,14 @@ module.exports = function (grunt) {
         });
       }
 
+      contents += uniqueArray(explicitCache).join('\n');
+      contents += '\n';
+
       // Network section
       if (options.network) {
         contents += '\nNETWORK:\n';
         options.network.forEach(function (item) {
-          contents += encodePath(item) + '\n';
+          contents += encodePath(item, true) + '\n';
         });
       } else {
         // If there's no network section, add a default '*' wildcard
