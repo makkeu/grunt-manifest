@@ -111,8 +111,8 @@ module.exports = function (grunt) {
       // Fallback section
       if (options.fallback) {
         contents += '\nFALLBACK:\n';
-        options.fallback.forEach(function (item) {
-          contents += encodeURI(item) + '\n';
+        Object.keys(options.fallback).forEach(function (source) {
+          contents += encodeURI(source) + ' ' + encodeURI(options.fallback[source]) + '\n';
         });
       }
 
